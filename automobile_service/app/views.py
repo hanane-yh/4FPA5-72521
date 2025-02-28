@@ -21,7 +21,7 @@ class ListPartsView(APIView):
 
 
 class UploadFileView(APIView):
-    def get(self, request):
+    def get(self, request, automobile_id, part_id):
         serializer = UploadFileContentSerializer(data={"file_name": "", "content": ""})
         return Response(serializer.initial_data)
 
