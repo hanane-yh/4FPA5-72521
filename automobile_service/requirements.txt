@@ -4,3 +4,4 @@ gunicorn
 psycopg2-binary
 celery
 django-environ==0.11.2
+drf-spectacular
