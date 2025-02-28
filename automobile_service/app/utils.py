@@ -1,5 +1,6 @@
 import io
 import zipfile
+import os
 
 
 def create_zip(file_paths):

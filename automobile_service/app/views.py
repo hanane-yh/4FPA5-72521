@@ -74,7 +74,7 @@ class DownloadAllFilesForPartView(APIView):
         file_paths = [pf.file.path for pf in files]
         zip_file = create_zip(file_paths)
         response = HttpResponse(zip_file, content_type='application/zip')
-        response['Content-Disposition'] = f'attachment; filename="{part.name}_files.zip"'
+        response['Content-Disposition'] = f'attachment; filename="{part.name}_{part.automobile}_files.zip"'
         return response
 
 
