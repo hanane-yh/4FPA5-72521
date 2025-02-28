@@ -1,0 +1,5 @@
+Django>=3.2,<4.0
+gunicorn
+celery
+mailtrap==2.0.1
+django-environ==0.11.2
