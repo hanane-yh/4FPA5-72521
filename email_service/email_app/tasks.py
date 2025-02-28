@@ -1,4 +1,6 @@
 import os
+from typing import Dict, Any
+
 import mailtrap as mt
 from celery import shared_task
 import environ
@@ -8,7 +10,15 @@ environ.Env.read_env(os.path.join(os.path.dirname(__file__), '..', '.env'))
 
 
 @shared_task(name='email_app.tasks.send_email_task')
-def send_email_task(payload):
+def send_email_task(payload: Dict[str, Any]) -> None:
+    """
+    A Celery task that sends an email using the Mailtrap client.
+    The 'payload' dictionary should contain keys 'automobile' and 'part'
+    with relevant information about the uploaded file and the associated automobile.
+
+    :param payload: A dictionary containing Automobile and Part information.
+    :return: None
+    """
     to_email = env('TO_EMAIL')
     automobile = payload.get('automobile', {})
     part = payload.get('part', {})

@@ -13,7 +13,19 @@ from .utils import create_zip, build_payload
 
 
 class ListPartsView(APIView):
+    """
+    Retrieves a list of parts for a specific automobile.
+    """
+
     def get(self, request, automobile_id):
+        """
+        Handles GET requests to list all parts associated with a given automobile.
+
+        :param request: The incoming HTTP request.
+        :param automobile_id: The ID of the automobile to retrieve parts for.
+        :return: A Response containing serialized parts data.
+        """
+
         automobile = get_object_or_404(Automobile, id=automobile_id)
         parts = automobile.parts.all()
         serializer = PartSerializer(parts, many=True, context={'request': request})
@@ -22,10 +34,29 @@ class ListPartsView(APIView):
 
 class UploadFileView(APIView):
     def get(self, request, automobile_id, part_id):
+        """
+        Returns an initial serializer structure for uploading file content.
+
+        :param request: The incoming HTTP request.
+        :param automobile_id: The ID of the automobile.
+        :param part_id: The ID of the part to which the file will be uploaded.
+        :return: A Response with an initial data structure for file upload.
+        """
+
         serializer = UploadFileContentSerializer(data={"file_name": "", "content": ""})
         return Response(serializer.initial_data)
 
     def post(self, request, automobile_id, part_id):
+        """
+        Handles the POST request to upload a file for a specified part,
+        creates a PartFile object, and triggers an email task via Celery.
+
+        :param request: The incoming HTTP request containing file_name and content.
+        :param automobile_id: The ID of the automobile.
+        :param part_id: The ID of the part to which the file is being uploaded.
+        :return: A Response indicating success or any validation errors.
+        """
+
         part = get_object_or_404(Part, id=part_id, automobile__id=automobile_id)
 
         serializer = UploadFileContentSerializer(data=request.data)
@@ -49,7 +80,20 @@ class UploadFileView(APIView):
 
 
 class DownloadSingleFileView(APIView):
+    """
+    Downloads a single file for a given part and file ID.
+    """
+
     def get(self, request, part_id, file_id):
+        """
+        Returns a downloadable file response for the specified part file.
+
+        :param request: The incoming HTTP request.
+        :param part_id: The ID of the part.
+        :param file_id: The ID of the file to download.
+        :return: An HttpResponse prompting the user to download the file.
+        """
+
         part = get_object_or_404(Part, id=part_id)
         part_file = get_object_or_404(PartFile, id=file_id, part=part)
         file_path = part_file.file.path
@@ -66,7 +110,20 @@ class DownloadSingleFileView(APIView):
 
 
 class DownloadAllFilesForPartView(APIView):
+    """
+    Downloads all files for a specific part as a single ZIP archive.
+    """
+
     def get(self, request, part_id):
+        """
+        Creates a ZIP archive of all files for the given part and returns it
+        as a downloadable response.
+
+        :param request: The incoming HTTP request.
+        :param part_id: The ID of the part.
+        :return: An HttpResponse with a ZIP file attachment.
+        """
+
         part = get_object_or_404(Part, id=part_id)
         files = part.files.all()
         if not files:
@@ -79,7 +136,20 @@ class DownloadAllFilesForPartView(APIView):
 
 
 class DownloadAllFilesForAutomobileView(APIView):
+    """
+    Downloads all files for a specific automobile as a single ZIP archive.
+    """
+
     def get(self, request, automobile_id):
+        """
+        Creates a ZIP archive of all files associated with the given automobile
+        and returns it as a downloadable response.
+
+        :param request: The incoming HTTP request.
+        :param automobile_id: The ID of the automobile.
+        :return: An HttpResponse with a ZIP file attachment.
+        """
+
         automobile = get_object_or_404(Automobile, id=automobile_id)
         parts = automobile.parts.all()
         file_paths = []
@@ -96,14 +166,37 @@ class DownloadAllFilesForAutomobileView(APIView):
 
 
 class ListAutomobilesView(APIView):
+    """
+    Lists all automobiles in the system.
+    """
+
     def get(self, request):
+        """
+        Retrieves a list of all Automobile instances and returns them in serialized form.
+
+        :param request: The incoming HTTP request.
+        :return: A Response containing serialized Automobile data.
+        """
+
         queryset = Automobile.objects.all()
         serializer = AutomobileSerializer(queryset, many=True, context={'request': request})
         return Response(serializer.data)
 
 
 class GetAutomobileView(APIView):
+    """
+    Retrieves a single Automobile by its primary key.
+    """
+
     def get(self, request, pk):
+        """
+        Returns the details of a specific Automobile identified by 'pk'.
+
+        :param request: The incoming HTTP request.
+        :param pk: The primary key of the Automobile to retrieve.
+        :return: A Response with the serialized Automobile data.
+        """
+
         queryset = get_object_or_404(Automobile, pk=pk)
         serializer = AutomobileSerializer(queryset, many=False)
         return Response(serializer.data)
